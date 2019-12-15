@@ -1,2 +1,6 @@
 # Text_Data_Cleaning
-Text Data Cleaning
+
+
+## Data Source
+Data used in this project is scraped using the syntax provided by [SemEval](http://alt.qcri.org/semeval2017/task5/) 
+
