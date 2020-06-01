@@ -7,5 +7,5 @@ Cleaning text data is a must before we want to do the analysis on text data. Fro
 This module is created in Python language and will be easily fit into your text analysis pipeline. Hope it is useful! 🙏
 
 ## Resources
-Resources used in this modul are available at https://github.com/louisowen6/NLP_bahasa_resources
+Resources used in this module are available at https://github.com/louisowen6/NLP_bahasa_resources
 
