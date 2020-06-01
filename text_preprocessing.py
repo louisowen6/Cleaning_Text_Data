@@ -20,6 +20,54 @@ with open("combined_stop_words.txt") as f:
     stop_words_list = f.read().splitlines()
 
 
+def sentences_cleaner(sentence):
+    '''
+    clean input sentence  
+    '''
+    mention_pat= r'@[A-Za-z0-9_]+'
+    mention_2_pat=r'@[A-Za-z0-9_]+:\s'
+    http_pat = r'https?://[^ ]+'
+    www_pat = r'www.[^ ]+'
+    hashtag_pat = r'#[A-Za-z0-9_]+'
+    linebreak_pat = r'\n'
+
+    #Remove Emoji
+    stripped = deEmojify(sentence)
+
+    #Delete mention
+    stripped = re.sub(mention_2_pat,'', stripped)
+    stripped = re.sub(mention_pat,'', stripped)
+
+    #Remove url
+    stripped = re.sub(http_pat, '', stripped)
+    stripped = re.sub(www_pat, '', stripped)
+
+    #Remove hashtag
+    stripped = re.sub(hashtag_pat, '', stripped)
+
+    #Remove linebreak
+    stripped = re.sub(linebreak_pat,'',stripped)
+
+    #Remove Punctuation
+    stripped = [re.sub(r'[^\w\s]',' ',x) for x in stripped.split(string.punctuation)][0]
+
+    #Remove Non Alphabet and Non Number Characters
+    stripped = re.sub(' +',' ',re.sub(r'[^a-zA-Z-0-9]',' ',stripped)).strip()
+
+    #Lowercase 
+    stripped = stripped.lower()
+
+    #Clean word by word
+    stripped = ' '.join(pd.Series(stripped.split()).apply(lambda x: word_cleaner(x)).to_list())
+
+    #remove stop words
+    lst = pd.Series(stripped.split()).apply(lambda x: 'stopword' if x in stop_words_list else x).to_list()
+    lst = [wrd for wrd in lst if wrd!='stopword']
+    stripped = ' '.join(lst)
+
+    return re.sub(' +',' ',stripped).strip()
+    
+
 def deEmojify(inputString):
     '''
     Function to remove emoji
@@ -72,49 +120,3 @@ def word_cleaner(word):
     return word
 
 
-def sentences_cleaner(sentence):
-    '''
-    clean input sentence  
-    '''
-    mention_pat= r'@[A-Za-z0-9_]+'
-    mention_2_pat=r'@[A-Za-z0-9_]+:\s'
-    http_pat = r'https?://[^ ]+'
-    www_pat = r'www.[^ ]+'
-    hashtag_pat = r'#[A-Za-z0-9_]+'
-    linebreak_pat = r'\n'
-
-    #Remove Emoji
-    stripped = deEmojify(sentence)
-
-    #Delete mention
-    stripped = re.sub(mention_2_pat,'', stripped)
-    stripped = re.sub(mention_pat,'', stripped)
-
-    #Remove url
-    stripped = re.sub(http_pat, '', stripped)
-    stripped = re.sub(www_pat, '', stripped)
-
-    #Remove hashtag
-    stripped = re.sub(hashtag_pat, '', stripped)
-
-    #Remove linebreak
-    stripped = re.sub(linebreak_pat,'',stripped)
-
-    #Remove Punctuation
-    stripped = [re.sub(r'[^\w\s]',' ',x) for x in stripped.split(string.punctuation)][0]
-
-    #Remove Non Alphabet and Non Number Characters
-    stripped = re.sub(' +',' ',re.sub(r'[^a-zA-Z-0-9]',' ',stripped)).strip()
-
-    #Lowercase 
-    stripped = stripped.lower()
-
-    #Clean word by word
-    stripped = ' '.join(pd.Series(stripped.split()).apply(lambda x: word_cleaner(x)).to_list())
-
-    #remove stop words
-    lst = pd.Series(stripped.split()).apply(lambda x: 'stopword' if x in stop_words_list else x).to_list()
-    lst = [wrd for wrd in lst if wrd!='stopword']
-    stripped = ' '.join(lst)
-
-    return re.sub(' +',' ',stripped).strip()
